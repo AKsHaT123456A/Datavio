@@ -1,10 +1,8 @@
-const puppeteer = require('puppeteer');
+const axios = require('axios');
 const cheerio = require('cheerio');
 const Flipkart = require('../models/flipkartData');
 const User = require('../models/user');
 const { handleErrorResponse } = require('../utils/handleError');
-const logger = require('../utils/logger');
-require("dotenv").config();
 
 module.exports.scrap = async (req, res) => {
     const url = req.body.url;
@@ -17,20 +15,8 @@ module.exports.scrap = async (req, res) => {
             return res.status(200).json(existingData);
         }
 
-        const browser = await puppeteer.launch({
-            args: [
-                "--disable-setuid-sandbox",
-                "--single-process",
-                "--no-zygote",
-                "--no-sandbox",
-            ],
-            executablePath: process.env.NODE_ENV === "production" ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
-        });
+        const content = await fetchContent(url); // Fetch content using axios
 
-        const page = await browser.newPage();
-        await page.goto(url);
-
-        const content = await page.content();
         const $ = cheerio.load(content);
 
         const title = $('span[class="B_NuCI"]').text();
@@ -44,7 +30,7 @@ module.exports.scrap = async (req, res) => {
         const numReviews = parseInt(numReviewsStr);
 
         if (!title || isNaN(price) || isNaN(numReviews)) {
-            return errorHandler(res, 400, ' Ensure data extraction failded.', 'Validation failed');
+            return handleErrorResponse(res, 400, ' Ensure data extraction failed.', 'Validation failed');
         }
 
         const flipkartData = new Flipkart({
@@ -62,7 +48,6 @@ module.exports.scrap = async (req, res) => {
         const user = await User.findByIdAndUpdate(userId, {
             $push: { url: flipkartData }
         }).populate({ path: "url", model: "Flipkart", select: "userId url title price numReviews ratings mediaCount description" });
-        await browser.close();
 
         res.status(201).json({ message: 'Data scraped and saved successfully.', data: flipkartData });
     } catch (error) {
@@ -71,3 +56,12 @@ module.exports.scrap = async (req, res) => {
     }
 };
 
+// Fetch content using axios
+async function fetchContent(url) {
+    try {
+        const response = await axios.get(url);
+        return response.data;
+    } catch (error) {
+        throw new Error(`Error fetching content: ${error.message}`);
+    }
+}
