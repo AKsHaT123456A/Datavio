@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const dbconnect = require('./connections/db');
 
 const app = express();
-
+const apiPrefix = '/api/v1';
 app.use(express.json());
 
 const authRoute = require('./routes/authRoute');
@@ -16,8 +16,8 @@ dbconnect();
 app.use(cookieParser());
 
 // !Import routes
-app.use('/api/v1', authRoute);
-app.use('/api/v1', scrapRoute);
+app.use(`${apiPrefix}/auth`, authRoute);
+app.use(`${apiPrefix}`, scrapRoute);
 
 // !Start the server
 const PORT = process.env.PORT || 3000;
