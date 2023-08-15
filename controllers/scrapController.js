@@ -4,6 +4,7 @@ const Flipkart = require('../models/flipkartData');
 const User = require('../models/user');
 const { handleErrorResponse } = require('../utils/handleError');
 const logger = require('../utils/logger');
+require("dotenv").config();
 
 module.exports.scrap = async (req, res) => {
     const url = req.body.url;
@@ -16,7 +17,15 @@ module.exports.scrap = async (req, res) => {
             return res.status(200).json(existingData);
         }
 
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({
+            args: [
+                "--disable-setuid-sandbox",
+                "--single-process",
+                "--no-zygote",
+                "--no-sandbox",
+            ],
+            executablePath: process.env.NODE_ENV === "production" ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
+        });
 
         const page = await browser.newPage();
         await page.goto(url);
@@ -35,7 +44,7 @@ module.exports.scrap = async (req, res) => {
         const numReviews = parseInt(numReviewsStr);
 
         if (!title || isNaN(price) || isNaN(numReviews)) {
-            return errorHandler(res, 400, ' Ensure data extraction is correct.', 'Validation failed');
+            return errorHandler(res, 400, ' Ensure data extraction failded.', 'Validation failed');
         }
 
         const flipkartData = new Flipkart({
