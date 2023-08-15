@@ -9,6 +9,7 @@ app.use(express.json());
 const authRoute = require('./routes/authRoute');
 const scrapRoute = require('./routes/scrapRoute');
 const logger = require('./utils/logger');
+const { auth } = require('./middleware/auth');
 
 // !Connect to the database
 dbconnect();
@@ -16,6 +17,9 @@ dbconnect();
 app.use(cookieParser());
 
 // !Import routes
+app.use('/',auth, (req,res)=>{
+  return res.send("Welcome to Datavio")
+});
 app.use(`${apiPrefix}/auth`, authRoute);
 app.use(`${apiPrefix}`, scrapRoute);
 
