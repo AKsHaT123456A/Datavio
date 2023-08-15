@@ -3,6 +3,7 @@ const cheerio = require('cheerio');
 const Flipkart = require('../models/flipkartData');
 const User = require('../models/user');
 const { handleErrorResponse } = require('../utils/handleError');
+const logger = require('../utils/logger');
 
 module.exports.scrap = async (req, res) => {
     const url = req.body.url;
