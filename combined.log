@@ -115,3 +115,9 @@
 2023-08-15T13:36:31.190Z [ERROR]: Error: An error occurred while logging in "expiresIn" should be a number of seconds or string representing a timespan
 2023-08-15T13:37:10.306Z [INFO]: Server is running on port 3000
 2023-08-15T13:37:13.282Z [INFO]: Connected to the database
+2023-08-15T13:38:27.145Z [INFO]: Server is running on port 3000
+2023-08-15T13:38:30.192Z [INFO]: Connected to the database
+2023-08-15T13:40:34.143Z [INFO]: Server is running on port 3000
+2023-08-15T13:40:37.465Z [INFO]: Server is running on port 3000
+2023-08-15T13:40:39.202Z [INFO]: Server is running on port 3000
+2023-08-15T13:40:42.089Z [INFO]: Connected to the database
