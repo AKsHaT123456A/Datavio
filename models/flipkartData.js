@@ -32,7 +32,7 @@ const flipSchema = mongoose.Schema(
         },
         ratings: {
             type: String,
-            required: [true, "Ratings are required"],
+            default:"4.1",
             trim: true,
         },
         mediaCount: {
